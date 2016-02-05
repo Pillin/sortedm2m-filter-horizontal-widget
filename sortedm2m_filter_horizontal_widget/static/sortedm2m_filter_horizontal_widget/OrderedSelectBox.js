@@ -1,11 +1,21 @@
-function changePosition (id, elem, oelem, number) {
+function switchBox (id, elem, oelem) {
+    var obj1 = OrderedSelectBox.cache[id].filter(
+        function(element) { return element.value == elem.attr('value')}
+    )
+    var obj2 = OrderedSelectBox.cache[id].filter(
+        function(element) { return element.value == oelem.attr('value')}
+    )
+    if ( !obj1.length || !obj2.length ) return
+
+    obj1 = obj1[0].order
+    obj2 = obj2[0].order
     OrderedSelectBox.cache[id].map(
         function(element) {
             if (element.value == elem.attr('value')) {
-                element.order += number;
+                element.order = obj2;
             }
             if (element.value == oelem.attr('value')) {
-                element.order -= number;
+                element.order = obj1;
             }
         }
     );
@@ -135,7 +145,7 @@ var OrderedSelectBox = {
     },
     orderUp: function(id) {
       $('#' + id).find('option:selected').each(function(){
-          changePosition(id, $(this), $(this).prev(), -1);
+          switchBox(id, $(this), $(this).prev());
           $(this).insertBefore($(this).prev());
       });
       OrderedSelectBox.cache[id].sort(function(a, b){
@@ -145,10 +155,9 @@ var OrderedSelectBox = {
     },
     orderDown: function(id) {
       $('#' + id).find('option:selected').each(function(){
-        changePosition(id, $(this), $(this).next(), 1);
+        switchBox(id, $(this), $(this).next());
        $(this).insertAfter($(this).next());
       });
-
       OrderedSelectBox.cache[id].sort(function(a, b){
         return a.order - b.order;
       });
