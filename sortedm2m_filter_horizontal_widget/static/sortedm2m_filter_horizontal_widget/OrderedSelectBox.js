@@ -1,3 +1,16 @@
+function changePosition (id, elem, oelem, number) {
+    OrderedSelectBox.cache[id].map(
+        function(element) {
+            if (element.value == elem.attr('value')) {
+                element.order += number;
+            }
+            if (element.value == oelem.attr('value')) {
+                element.order -= number;
+            }
+        }
+    );
+}
+
 var OrderedSelectBox = {
     cache: new Object(),
     init: function(id) {
@@ -51,7 +64,6 @@ var OrderedSelectBox = {
         OrderedSelectBox.cache[id].length--;
     },
     add_to_cache: function(id, option) {
-
         var order = 0;
         if( option.getAttribute('data-sort-value') ) {
           order = parseInt( option.getAttribute('data-sort-value') );
@@ -123,14 +135,22 @@ var OrderedSelectBox = {
     },
     orderUp: function(id) {
       $('#' + id).find('option:selected').each(function(){
+          changePosition(id, $(this), $(this).prev(), -1);
           $(this).insertBefore($(this).prev());
+      });
+      OrderedSelectBox.cache[id].sort(function(a, b){
+        return a.order - b.order;
       });
 
     },
     orderDown: function(id) {
-
       $('#' + id).find('option:selected').each(function(){
+        changePosition(id, $(this), $(this).next(), 1);
        $(this).insertAfter($(this).next());
+      });
+
+      OrderedSelectBox.cache[id].sort(function(a, b){
+        return a.order - b.order;
       });
 
     },
